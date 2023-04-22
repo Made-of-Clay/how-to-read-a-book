@@ -1,10 +1,13 @@
 <template>
-  <VueFlow v-model="elements" />
+  <VueFlow v-model="elements" fit-view-on-init>
+    <MiniMap />
+  </VueFlow>
   <!-- <button id="logPositions" @click="logPositions">Log</button> -->
 </template>
 
 <script setup lang="ts">
 import { VueFlow } from '@vue-flow/core';
+import { MiniMap } from '@vue-flow/minimap';
 import { ref } from 'vue';
 
 const elements = ref([

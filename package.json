@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vue-flow/core": "^1.19.0",
+    "@vue-flow/minimap": "^1.1.1",
     "vue": "^3.2.47"
   },
   "devDependencies": {
