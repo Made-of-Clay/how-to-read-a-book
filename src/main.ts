@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import './style.css'
 
+import '@alexlit/css-material-color-palette-variables'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 import '@vue-flow/minimap/dist/style.css'
