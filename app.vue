@@ -6,10 +6,25 @@
 </template>
 
 <script setup lang="ts">
+import '@alexlit/css-material-color-palette-variables'
+import '@vue-flow/core/dist/style.css'
+import '@vue-flow/core/dist/theme-default.css'
+import '@vue-flow/minimap/dist/style.css'
+
 import { VueFlow } from '@vue-flow/core';
 import { MiniMap } from '@vue-flow/minimap';
 import { ref } from 'vue';
 
+const foo = await queryContent('/').find()
+// const { data: queried } = await useAsyncData('elementary', () => queryContent('elementary').findOne())
+
+const nodeId = {
+  elementary: '2',
+};
+
+// build this initial object using markdown & front-matter instead
+// position, type, and id can be in front-matter
+// label is h1 and details (shown in side drawer when clicked) are written in md body
 const elements = ref([
   {
     id: '1',
@@ -19,16 +34,37 @@ const elements = ref([
   },
   { id: 'e1-2', source: '1', target: '2' },
   {
-    id: '2',
+    id: nodeId.elementary,
     label: 'Elementary Reading',
-    position: { x: -145, y: 90 },
+    position: { x: -310, y: 90 },
     class: 'readingLevel readingLevel--elementary',
   },
   {
     id: '2.1',
-    label: 'Sub Component 1',
-    position: { x: 14, y: 40 },
-    parentNode: '2',
+    label: 'Reading Readiness',
+    position: { x: 22, y: 75 },
+    parentNode: nodeId.elementary,
+    class: 'readingLevel__child',
+  },
+  {
+    id: '2.2',
+    label: 'Reading Very Simple Materials',
+    position: { x: 200, y: 75 },
+    parentNode: nodeId.elementary,
+    class: 'readingLevel__child',
+  },
+  {
+    id: '2.3',
+    label: 'Vocabulary Building & "Unlocking" Unknown Words',
+    position: { x: 380, y: 75 },
+    parentNode: nodeId.elementary,
+    class: 'readingLevel__child',
+  },
+  {
+    id: '2.4',
+    label: 'Refinement & Enhancement of Learned Skills',
+    position: { x: 570, y: 75 },
+    parentNode: nodeId.elementary,
     class: 'readingLevel__child',
   },
   { id: 'e2-3', source: '2', target: '3' },
@@ -68,6 +104,36 @@ function logPositions() {
   --parentNodeBorderColor: var(--green--500);
   --childNodeBgColor: var(--light-blue--100);
   --childNodeBorderColor: var(--light-blue--500);
+
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+#__nuxt {
+  height: 100vh;
+  width: 100%;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
 }
 #logPositions {
   position: absolute;
@@ -93,7 +159,7 @@ function logPositions() {
   width: 100%;
 } */
 .readingLevel--elementary {
-  /* color: white; */
+  width: 750px;
 }
 .readingLevel__child {
   background-color: var(--childNodeBgColor);
