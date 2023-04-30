@@ -1,6 +1,6 @@
 ---
 # id: elementary
-position: { 'x': -190, 'y': 360 }
+position: { 'x': 120, 'y': 650 }
 ---
 
 # Inspectional Reading

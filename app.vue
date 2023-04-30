@@ -3,6 +3,7 @@
     <MiniMap />
   </VueFlow>
   <button id="logPositions" @click="logPositions">Log</button>
+  <ContentDrawer :selected-id="selectedId" />
 </template>
 
 <script setup lang="ts">
@@ -19,7 +20,7 @@ const foo = await queryContent('/').find()
 // const { data: queried } = await useAsyncData('elementary', () => queryContent('elementary').findOne())
 
 const nodeId = {
-  elementary: '2',
+  elementary: 'elementary',
 };
 
 // build this initial object using markdown & front-matter instead
@@ -32,12 +33,13 @@ const elements = ref([
     label: 'Levels of Reading',
     position: { x: 0, y: 0 },
   },
-  { id: 'e1-2', source: '1', target: '2' },
+  { id: 'e1-2', source: '1', target: 'elementary' },
   {
     id: nodeId.elementary,
     label: 'Elementary Reading',
     position: { x: -310, y: 90 },
     class: 'readingLevel readingLevel--elementary',
+    selectable: true,
   },
   {
     id: '2.1',
@@ -67,7 +69,7 @@ const elements = ref([
     parentNode: nodeId.elementary,
     class: 'readingLevel__child',
   },
-  { id: 'e2-3', source: '2', target: '3' },
+  { id: 'e2-3', source: 'elementary', target: '3' },
   {
     id: '3',
     label: 'Inspectional Reading',
@@ -91,6 +93,10 @@ const elements = ref([
     class: 'readingLevel readingLevel--synoptic',
   },
 ]);
+const selectedId = computed(() =>
+  elements.value.find((elem: any) => elem.selected)?.id
+)
+
 function logPositions() {
   elements.value.forEach(el => {
     el.position && console.log({ id: el.id, ...el.position })
@@ -164,5 +170,13 @@ function logPositions() {
 .readingLevel__child {
   background-color: var(--childNodeBgColor);
   border-color: var(--childNodeBorderColor);
+}
+pre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: break-spaces;
+  width: 600px;
+  background: #00000088;
 }
 </style>
