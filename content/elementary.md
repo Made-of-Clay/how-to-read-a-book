@@ -1,5 +1,6 @@
 ---
-position: { "x": 0, "y": 0 }
+position: { "x": -114, "y": 240 }
+edgeTo: inspectional
 ---
 
 # Elementary Reading

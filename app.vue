@@ -3,7 +3,7 @@
     <MiniMap />
   </VueFlow>
   <button id="logPositions" @click="logPositions">Log</button>
-  <ContentDrawer :selected-id="selectedId" />
+  <!-- <ContentDrawer :selected-id="selectedId" /> -->
 </template>
 
 <script setup lang="ts">
@@ -16,38 +16,57 @@ import { VueFlow } from '@vue-flow/core';
 import { MiniMap } from '@vue-flow/minimap';
 import { ref } from 'vue';
 
-const foo = await queryContent('/').find()
+const typeMap = {
+  levelsOfReading: 'input',
+  synoptic: 'output',
+} as Record<string, string>
+
+function getIdFromFilename(filename: string) {
+  return filename.substring(0, filename.length - 3)
+}
+
+const content = await queryContent('/').find()
+const nodes = computed(() => {
+  return content.map(item => {
+    const id = getIdFromFilename(item._file ?? '')
+    return {
+      id,
+      type: typeMap[id] ?? 'default',
+      label: item.title,
+      parentNode: item.parentNode,
+      position: item.position,
+      class: !item.parentNode ? `readingLevel readingLevel--${id}` : 'readingLevel__child',
+      selectable: true,
+    }
+  })
+})
+type EdgeType = {id: string, source: string, target: string}
+const edges = computed(() =>
+  content.reduce((edgeList, item) => {
+    const id = getIdFromFilename(item._file ?? '')
+    const buildEdge = (edgeTo: string) => ({
+      id: `edge:${id}-${edgeTo}`,
+      source: id,
+      target: edgeTo,
+    })
+    if (item.edgeTo) {
+      if (typeof item.edgeTo === 'string')
+        edgeList.push(buildEdge(item.edgeTo))
+      else if (Array.isArray(item.edgeTo))
+        edgeList = edgeList.concat(item.edgeTo.map(buildEdge))
+    }
+    return edgeList;
+  }, [] as EdgeType[])
+)
 // const { data: queried } = await useAsyncData('elementary', () => queryContent('elementary').findOne())
 
 const nodeId = {
   elementary: 'elementary',
 };
 
-// build this initial object using markdown & front-matter instead
-// position, type, and id can be in front-matter
-// label is h1 and details (shown in side drawer when clicked) are written in md body
 const elements = ref([
-  {
-    id: '1',
-    type: 'input',
-    label: 'Levels of Reading',
-    position: { x: 0, y: 0 },
-  },
-  { id: 'e1-2', source: '1', target: 'elementary' },
-  {
-    id: nodeId.elementary,
-    label: 'Elementary Reading',
-    position: { x: -310, y: 90 },
-    class: 'readingLevel readingLevel--elementary',
-    selectable: true,
-  },
-  {
-    id: '2.1',
-    label: 'Reading Readiness',
-    position: { x: 22, y: 75 },
-    parentNode: nodeId.elementary,
-    class: 'readingLevel__child',
-  },
+  ...nodes.value,
+  ...edges.value,
   {
     id: '2.2',
     label: 'Reading Very Simple Materials',
@@ -69,36 +88,13 @@ const elements = ref([
     parentNode: nodeId.elementary,
     class: 'readingLevel__child',
   },
-  { id: 'e2-3', source: 'elementary', target: '3' },
-  {
-    id: '3',
-    label: 'Inspectional Reading',
-    position: { x: -190, y: 360 },
-    class: 'readingLevel readingLevel--inspectional',
-  },
-  { id: 'e3-4', source: '3', target: '4' },
-  {
-    id: '4',
-    type: 'output',
-    label: 'Analytical Reading',
-    position: { x: -516, y: 650 },
-    class: 'readingLevel readingLevel--analytical',
-  },
-  { id: 'e3-5', source: '3', target: '5' },
-  {
-    id: '5',
-    type: 'output',
-    label: 'Synoptic Reading',
-    position: { x: 120, y: 650 },
-    class: 'readingLevel readingLevel--synoptic',
-  },
-]);
+])
 const selectedId = computed(() =>
   elements.value.find((elem: any) => elem.selected)?.id
 )
 
 function logPositions() {
-  elements.value.forEach(el => {
+  nodes.value.forEach(el => {
     el.position && console.log({ id: el.id, ...el.position })
   })
 }

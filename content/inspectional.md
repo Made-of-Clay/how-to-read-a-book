@@ -1,6 +1,9 @@
 ---
 # id: elementary
-position: { 'x': 120, 'y': 650 }
+position: { "x": -6, "y": 475 }
+edgeTo:
+- analytical
+- synoptic
 ---
 
 # Inspectional Reading

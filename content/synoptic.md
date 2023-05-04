@@ -1,6 +1,6 @@
 ---
 # id: elementary
-position: { 'x': -190, 'y': 360 }
+position: { 'x': 425, 'y': 755 }
 ---
 
 # Synoptic Reading

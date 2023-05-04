@@ -1,5 +1,6 @@
 ---
-position: { "x": 0, "y": 0 }
+position: { "x": 22, "y": 75 }
+parentNode: elementary
 ---
 
 # Reading Readiness
