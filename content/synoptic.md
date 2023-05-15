@@ -1,5 +1,4 @@
 ---
-# id: elementary
 position: { 'x': 425, 'y': 755 }
 ---
 

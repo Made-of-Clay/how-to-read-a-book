@@ -1,20 +1,18 @@
 <template>
-    <div class="contentDrawer" :class="{ 'contentDrawer--showing': !!selectedId }">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita, rerum odio ex dolore libero, vero ea asperiores, accusamus repellat fugit totam explicabo ab et deserunt officia ullam! Ipsum, eligendi assumenda!
-    </div>
+  <div class="contentDrawer" :class="{ 'contentDrawer--showing': !!selectedId }">
+    <ContentDoc v-if="path" :path="path" />
+  </div>
 </template>
 
 <script setup lang="ts">
 const props = defineProps({
-    selectedId: {
-        type: String,
-        default: '',
-    },
+  selectedId: {
+    type: String,
+    default: '',
+  },
 })
 
-watch(() => props.selectedId, (id) => {
-    console.log(id)
-})
+const path = computed(() => props.selectedId.toLowerCase())
 </script>
 
 <style>

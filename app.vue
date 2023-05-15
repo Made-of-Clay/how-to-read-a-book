@@ -1,9 +1,14 @@
 <template>
   <VueFlow v-model="elements" fit-view-on-init>
     <MiniMap />
+    <Controls />
   </VueFlow>
   <button id="logPositions" @click="logPositions">Log</button>
-  <!-- <ContentDrawer :selected-id="selectedId" /> -->
+  <!-- <label>
+    Show Drawer
+    <input v-model="canShowDrawer" type="checkbox">
+  </label> -->
+  <ContentDrawer :selected-id="canShowDrawer ? selectedId : undefined" />
 </template>
 
 <script setup lang="ts">
@@ -11,10 +16,14 @@ import '@alexlit/css-material-color-palette-variables'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 import '@vue-flow/minimap/dist/style.css'
+import '@vue-flow/controls/dist/style.css'
 
-import { VueFlow } from '@vue-flow/core';
-import { MiniMap } from '@vue-flow/minimap';
+import { VueFlow } from '@vue-flow/core'
+import { MiniMap } from '@vue-flow/minimap'
+import { Controls } from '@vue-flow/Controls'
 import { ref } from 'vue';
+
+const canShowDrawer = ref(true)
 
 const typeMap = {
   levelsOfReading: 'input',
@@ -26,77 +35,53 @@ function getIdFromFilename(filename: string) {
 }
 
 const content = await queryContent('/').find()
-const nodes = computed(() => {
-  return content.map(item => {
-    const id = getIdFromFilename(item._file ?? '')
-    return {
-      id,
-      type: typeMap[id] ?? 'default',
-      label: item.title,
-      parentNode: item.parentNode,
-      position: item.position,
-      class: !item.parentNode ? `readingLevel readingLevel--${id}` : 'readingLevel__child',
-      selectable: true,
-    }
-  })
+const nodes = content.map(item => {
+  const id = getIdFromFilename(item._file ?? '')
+  return {
+    id,
+    type: typeMap[id] ?? 'default',
+    label: item.title,
+    parentNode: item.parentNode,
+    position: item.position,
+    class: !item.parentNode ? `readingLevel readingLevel--${id}` : 'readingLevel__child',
+    selectable: true,
+  }
 })
 type EdgeType = {id: string, source: string, target: string}
-const edges = computed(() =>
-  content.reduce((edgeList, item) => {
-    const id = getIdFromFilename(item._file ?? '')
-    const buildEdge = (edgeTo: string) => ({
-      id: `edge:${id}-${edgeTo}`,
-      source: id,
-      target: edgeTo,
-    })
-    if (item.edgeTo) {
-      if (typeof item.edgeTo === 'string')
-        edgeList.push(buildEdge(item.edgeTo))
-      else if (Array.isArray(item.edgeTo))
-        edgeList = edgeList.concat(item.edgeTo.map(buildEdge))
-    }
-    return edgeList;
-  }, [] as EdgeType[])
-)
-// const { data: queried } = await useAsyncData('elementary', () => queryContent('elementary').findOne())
-
-const nodeId = {
-  elementary: 'elementary',
-};
+const edges = content.reduce((edgeList, item) => {
+  const id = getIdFromFilename(item._file ?? '')
+  const buildEdge = (edgeTo: string) => ({
+    id: `edge:${id}-${edgeTo}`,
+    source: id,
+    target: edgeTo,
+  })
+  if (item.edgeTo) {
+    if (typeof item.edgeTo === 'string')
+      edgeList.push(buildEdge(item.edgeTo))
+    else if (Array.isArray(item.edgeTo))
+      edgeList = edgeList.concat(item.edgeTo.map(buildEdge))
+  }
+  return edgeList;
+}, [] as EdgeType[])
 
 const elements = ref([
-  ...nodes.value,
-  ...edges.value,
-  {
-    id: '2.2',
-    label: 'Reading Very Simple Materials',
-    position: { x: 200, y: 75 },
-    parentNode: nodeId.elementary,
-    class: 'readingLevel__child',
-  },
-  {
-    id: '2.3',
-    label: 'Vocabulary Building & "Unlocking" Unknown Words',
-    position: { x: 380, y: 75 },
-    parentNode: nodeId.elementary,
-    class: 'readingLevel__child',
-  },
-  {
-    id: '2.4',
-    label: 'Refinement & Enhancement of Learned Skills',
-    position: { x: 570, y: 75 },
-    parentNode: nodeId.elementary,
-    class: 'readingLevel__child',
-  },
+  ...nodes,
+  ...edges,
 ])
 const selectedId = computed(() =>
   elements.value.find((elem: any) => elem.selected)?.id
 )
 
 function logPositions() {
-  nodes.value.forEach(el => {
-    el.position && console.log({ id: el.id, ...el.position })
+  elements.value.forEach(el => {
+    if ('position' in el) {
+      console.log({ id: el.id, ...el.position })
+    }
+    // el.position && console.log({ id: el.id, ...el.position })
   })
+  // nodes.value.forEach(el => {
+  //   el.position && console.log({ id: el.id, ...el.position })
+  // })
 }
 </script>
 
@@ -166,6 +151,12 @@ function logPositions() {
 .readingLevel__child {
   background-color: var(--childNodeBgColor);
   border-color: var(--childNodeBorderColor);
+}
+.readingLevel--inspectional {
+  width: 750px;
+}
+.readingLevel--analytical {
+  width: 750px;
 }
 pre {
   position: absolute;

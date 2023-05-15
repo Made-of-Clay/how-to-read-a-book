@@ -1,5 +1,5 @@
 ---
-position: { 'x': -345, 'y': 755 }
+position: { 'x': -500, 'y': 750 }
 ---
 
 # Analytical Reading

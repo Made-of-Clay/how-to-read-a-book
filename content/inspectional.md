@@ -1,6 +1,5 @@
 ---
-# id: elementary
-position: { "x": -6, "y": 475 }
+position: { "x": -120.4, "y": 472.75 }
 edgeTo:
 - analytical
 - synoptic
